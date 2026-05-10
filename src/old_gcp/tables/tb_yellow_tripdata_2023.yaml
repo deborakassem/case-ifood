@@ -1,4 +1,5 @@
 table_name: tb_yellow_tripdata_2023
+table_description: "Tabela com os dados de corridas de táxi em Nova York para o ano de 2023."
 partitioning_field: tpep_pickup_datetime
 partitioning_type: DAY
 clustering: PULocationID,payment_type,VendorID
@@ -14,8 +15,8 @@ schema:
     type: TIMESTAMP
     description: "Data e hora em que o taxímetro foi desligado."
   - name: passenger_count
-    type: FLOAT
-    description: "Número de passageiros (valor informado pelo motorista)."
+    type: INTEGER
+    description: "Número de passageiros no veículo."
   - name: trip_distance
     type: FLOAT
     description: "Distância percorrida em milhas."
