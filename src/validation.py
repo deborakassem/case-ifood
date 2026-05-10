@@ -41,9 +41,15 @@ actual_types = {field.name: field.dataType.simpleString() for field in df_nyc_ta
 for col, expected in expected_types.items():
     assert actual_types[col] == expected, f"Tipo incorreto para {col}: esperado {expected}, encontrado {actual_types[col]}"
 
-# 4. Valida se há valores nulos nas colunas críticas
-critical_columns = ["vendor_id", "total_amount", "tpep_pickup_datetime", "tpep_dropoff_datetime"]
-for col in critical_columns:
+# 4. Valida se há valores nulos
+columns = [
+    "vendor_id",
+    "passenger_count",
+    "total_amount",
+    "tpep_pickup_datetime",
+    "tpep_dropoff_datetime"
+]
+for col in columns:
     null_count = df_nyc_taxi_data.filter(f.col(col).isNull()).count()
     assert null_count == 0, f"Coluna {col} possui {null_count:,} valores nulos."
 
