@@ -1,0 +1,63 @@
+table_name: tb_yellow_tripdata_2023
+partitioning_field: tpep_pickup_datetime
+partitioning_type: DAY
+clustering: PULocationID,payment_type,VendorID
+expiration_days: 365
+schema:
+  - name: VendorID
+    type: INTEGER
+    description: "Código do fornecedor (1: Creative Mobile Technologies, 2: Curb Mobility, 6: Myle Technologies, 7: Helix)."
+  - name: tpep_pickup_datetime
+    type: TIMESTAMP
+    description: "Data e hora em que o taxímetro foi acionado."
+  - name: tpep_dropoff_datetime
+    type: TIMESTAMP
+    description: "Data e hora em que o taxímetro foi desligado."
+  - name: passenger_count
+    type: FLOAT
+    description: "Número de passageiros (valor informado pelo motorista)."
+  - name: trip_distance
+    type: FLOAT
+    description: "Distância percorrida em milhas."
+  - name: RatecodeID
+    type: FLOAT
+    description: "Código de tarifa (1: Standard, 2: JFK, 3: Newark, 4: Nassau/Westchester, 5: Negociada, 6: Grupo, 99: Null/desconhecido)."
+  - name: store_and_fwd_flag
+    type: STRING
+    description: "Indica se a corrida foi armazenada localmente antes de enviar (Y=sim, N=não)."
+  - name: PULocationID
+    type: INTEGER
+    description: "ID da zona de embarque (TLC Taxi Zone)."
+  - name: DOLocationID
+    type: INTEGER
+    description: "ID da zona de desembarque (TLC Taxi Zone)."
+  - name: payment_type
+    type: INTEGER
+    description: "Forma de pagamento (0: Tarifa flexível, 1: Cartão, 2: Dinheiro, 3: Sem cobrança, 4: Disputa, 5: Desconhecido, 6: Viagem cancelada)."
+  - name: fare_amount
+    type: FLOAT
+    description: "Valor da tarifa calculada pelo taxímetro."
+  - name: extra
+    type: FLOAT
+    description: "Cobranças extras."
+  - name: mta_tax
+    type: FLOAT
+    description: "Taxa aplicada automaticamente com base na tarifa do taxímetro."
+  - name: tip_amount
+    type: FLOAT
+    description: "Valor da gorjeta."
+  - name: tolls_amount
+    type: FLOAT
+    description: "Total de pedágios pagos na corrida."
+  - name: improvement_surcharge
+    type: FLOAT
+    description: "Taxa de melhoria cobrada no início da corrida."
+  - name: total_amount
+    type: FLOAT
+    description: "Valor total cobrado do passageiro."
+  - name: congestion_surcharge
+    type: FLOAT
+    description: "Taxa de congestionamento para corridas em Midtown/Lower Manhattan."
+  - name: airport_fee
+    type: FLOAT
+    description: "Taxa de aeroporto para embarques em LaGuardia ou JFK."
