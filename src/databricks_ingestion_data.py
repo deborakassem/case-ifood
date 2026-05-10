@@ -13,15 +13,14 @@
 # ---------------------------------------------------------------------------------------
 # Databricks notebook source
 # MAGIC %sql
-# MAGIC -- Cria o schema (dataset) 
+# MAGIC -- Cria o schema (dataset)
 # MAGIC CREATE SCHEMA IF NOT EXISTS workspace.nyc_taxi
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC -- Cria os volumes de armazenamento dos dados brutos e de consumo no schema
+# MAGIC -- Cria os volumes de armazenamento dos dados brutos
 # MAGIC CREATE VOLUME IF NOT EXISTS workspace.nyc_taxi.landing_zone;
-# MAGIC CREATE VOLUME IF NOT EXISTS workspace.nyc_taxi.consumption_zone;
 
 # COMMAND ----------
 
@@ -33,13 +32,13 @@ display(dbutils.fs.ls("/Volumes/workspace/nyc_taxi/landing_zone/"))
 
 # Define os diretórios da landing zone e da consumption zone
 LANDING_PATH = "/Volumes/workspace/nyc_taxi/landing_zone/"
-CONSUMPTION_PATH = "/Volumes/workspace/nyc_taxi/consumption_zone/"
+
 
 # COMMAND ----------
 
 from functools import reduce
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
+from pyspark.sql import functions as f
 
 # Lê os arquivos parquet da landing zone e define o schema explicitamente das colunas necessárias para que não haja inconsistências nos tipos dos campos
 
@@ -55,11 +54,11 @@ for month in ["01", "02", "03", "04", "05"]:
 
     # Seleciona e casteia as colunas obrigatórias com os tipos corretos
     df = df.select(
-        col("VendorID").cast("long"),
-        col("passenger_count").cast("integer"),
-        col("total_amount").cast("double"),
-        col("tpep_pickup_datetime").cast("timestamp"),
-        col("tpep_dropoff_datetime").cast("timestamp"),
+        f.col("VendorID").cast("long"),
+        f.col("passenger_count").cast("integer"),
+        f.col("total_amount").cast("double"),
+        f.col("tpep_pickup_datetime").cast("timestamp"),
+        f.col("tpep_dropoff_datetime").cast("timestamp"),
     )
     dfs.append(df)
 
@@ -71,8 +70,7 @@ df_final.printSchema()
 
 # COMMAND ----------
 
-# Salvando os dados em uma tabela delta no catálogo
-# Salva os dados na camada de consumo como Delta Table
+# Salva os arquivos como Delta Table no catálogo
 df_final.write \
     .format("delta") \
     .mode("overwrite") \
@@ -83,3 +81,33 @@ df_final.write \
 # MAGIC %sql
 # MAGIC -- Consultando a tabela para validacão
 # MAGIC SELECT * FROM workspace.nyc_taxi.yellow_trips LIMIT 10
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC -- Adiciona descrição da tabela
+# MAGIC ALTER TABLE workspace.nyc_taxi.yellow_trips 
+# MAGIC SET TBLPROPERTIES (
+# MAGIC     'comment' = 'Tabela com dados de corridas de táxi em Nova York para o ano de 2023.'
+# MAGIC );
+# MAGIC
+# MAGIC -- Adiciona descrição das colunas
+# MAGIC ALTER TABLE workspace.nyc_taxi.yellow_trips
+# MAGIC ALTER COLUMN VendorID
+# MAGIC COMMENT 'Código do fornecedor (1: Creative Mobile Technologies, 2: Curb Mobility, 6: Myle Technologies, 7: Helix).';
+# MAGIC
+# MAGIC ALTER TABLE workspace.nyc_taxi.yellow_trips
+# MAGIC ALTER COLUMN passenger_count
+# MAGIC COMMENT 'Número de passageiros no veículo.';
+# MAGIC
+# MAGIC ALTER TABLE workspace.nyc_taxi.yellow_trips
+# MAGIC ALTER COLUMN total_amount
+# MAGIC COMMENT 'Valor total cobrado do passageiro.';
+# MAGIC
+# MAGIC ALTER TABLE workspace.nyc_taxi.yellow_trips
+# MAGIC ALTER COLUMN tpep_pickup_datetime
+# MAGIC COMMENT 'Data e hora em que o taxímetro foi acionado.';
+# MAGIC
+# MAGIC ALTER TABLE workspace.nyc_taxi.yellow_trips
+# MAGIC ALTER COLUMN tpep_dropoff_datetime
+# MAGIC COMMENT 'Data e hora em que o taxímetro foi desligado.';
