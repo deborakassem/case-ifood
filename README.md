@@ -22,13 +22,14 @@ SQL: Análises
 ```
 case-ifood/
 ├── src/
+│   ├── jobs/
+│   │   └── nyc_taxi_case_job.json           # Definição do Job no Databricks
+│   ├── old_gcp/                             # Pasta com a definição inicial do projeto
 │   ├── databricks_ingestion_data_nb.ipynb   # Notebook de ingestão e transformação
 │   ├── databricks_ingestion_data_script.py  # Script exportado do notebook
 │   └── validation.py                        # Validações da tabela
 ├── analysis/
 │   └── analysis.ipynb                       # Notebook com as análises e respostas
-├── jobs/
-│   └── nyc_taxi_case_job.json               # Definição do Job no Databricks
 ├── README.md
 └── requirements.txt
 ```
@@ -57,7 +58,7 @@ CREATE VOLUME IF NOT EXISTS workspace.nyc_taxi.landing_zone;
 
 ### 2. Upload dos arquivos para a Landing Zone
 
-Faça o download dos arquivos parquet da fonte oficial:
+Faça o download dos arquivos parquet da fonte oficial [NYC Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page):
 
 ```
 https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2023-01.parquet
@@ -74,7 +75,7 @@ Em seguida, faça o upload dos arquivos para o Volume criado anteriormente via *
 A pipeline pode ser executada de duas formas:
 
 **Via Job:**
-- Importe o arquivo `jobs/nyc_taxi_case_job.json` no Databricks
+- Importe o arquivo `src/jobs/nyc_taxi_case_job.json` no Databricks
 - Execute o job `nyc_taxi_case`: ele roda a ingestão dos dados e a validação em sequência
 
 **Via notebook:**
@@ -102,7 +103,7 @@ SELECT * FROM workspace.nyc_taxi.yellow_trips;
 
 **Fonte:** [NYC Taxi & Limousine Commission](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)  
 **Período:** Janeiro a maio de 2023  
-**Total de registros:** ~16 milhões de corridas
+**Total de registros:** Aproximadamente 16 milhões de corridas
 
 ## 6. Análises
 
