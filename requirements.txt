@@ -1,5 +1,13 @@
+# Execução no Databricks (já disponível nativamente)
+pyspark==4.1.1
+delta-spark==4.2.0
+
+# Desenvolvimento local com GCP
 google-api-core==2.30.3
 google-auth==2.52.0
+google-cloud-bigquery==3.41.0
 google-cloud-core==2.6.0
 google-cloud-storage==3.10.1
+loguru==0.7.3
+pyyaml==6.0.3
 requests==2.33.1
