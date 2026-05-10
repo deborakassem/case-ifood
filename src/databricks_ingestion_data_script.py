@@ -39,12 +39,12 @@ from pyspark.sql import types as t
 
 LANDING_PATH = "/Volumes/workspace/nyc_taxi/landing_zone/"
 
-df_final = None
+df_nyc_taxi_data_final = None
 
 for month in ["01", "02", "03", "04", "05"]:
     path = f"{LANDING_PATH}yellow_tripdata_2023-{month}.parquet"
-    df = spark.read.parquet(path)
-    df = df.select(
+    df_nyc_taxi_data = spark.read.parquet(path)
+    df_nyc_taxi_data = df_nyc_taxi_data.select(
         f.col("VendorID").cast(t.LongType()).alias("vendor_id"),
         f.col("passenger_count").cast(t.IntegerType()),
         f.col("total_amount").cast(t.DoubleType()),
@@ -52,12 +52,12 @@ for month in ["01", "02", "03", "04", "05"]:
         f.col("tpep_dropoff_datetime").cast(t.TimestampType()),
     )
 
-    if df_final is None:
-        df_final = df
+    if df_nyc_taxi_data_final is None:
+        df_nyc_taxi_data_final = df_nyc_taxi_data
     else:
-        df_final = df_final.union(df)
-    
-df_final = df_final.filter(
+        df_nyc_taxi_data_final = df_nyc_taxi_data_final.union(df_nyc_taxi_data)
+
+df_final = df_nyc_taxi_data_final.filter(
     (f.col("tpep_pickup_datetime") >= "2023-01-01") &
     (f.col("tpep_pickup_datetime") <= "2023-05-31")
 )
