@@ -1,3 +1,5 @@
+# Databricks notebook source
+
 # Este script foi exportado do notebook Databricks e contém a pipeline de ingestão
 # dos dados de corridas de táxi de Nova York (Yellow Taxi Trip Records - 2023).
 
@@ -10,8 +12,8 @@
 # 3. Transformação e padronização dos tipos com PySpark
 # 4. Salvamento como Delta Table na camada de consumo
 
-# ---------------------------------------------------------------------------------------
-# Databricks notebook source
+# ------------------------------------------------------------------------------------
+
 # MAGIC %sql
 # MAGIC -- Cria o schema (dataset)
 # MAGIC CREATE SCHEMA IF NOT EXISTS workspace.nyc_taxi
@@ -30,39 +32,32 @@ display(dbutils.fs.ls("/Volumes/workspace/nyc_taxi/landing_zone/"))
 
 # COMMAND ----------
 
-# Define os diretórios da landing zone e da consumption zone
-LANDING_PATH = "/Volumes/workspace/nyc_taxi/landing_zone/"
-
-
-# COMMAND ----------
-
 from functools import reduce
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as f
+from pyspark.sql import types as t
 
 # Lê os arquivos parquet da landing zone e define o schema explicitamente das colunas necessárias para que não haja inconsistências nos tipos dos campos
 
-# Lê cada arquivo separadamente
+LANDING_PATH = "/Volumes/workspace/nyc_taxi/landing_zone/"
+
 dfs = []
 for month in ["01", "02", "03", "04", "05"]:
     path = f"{LANDING_PATH}yellow_tripdata_2023-{month}.parquet"
     df = spark.read.parquet(path)
 
-    # Renomeia Airport_fee para airport_fee se necessário
     if "Airport_fee" in df.columns:
         df = df.withColumnRenamed("Airport_fee", "airport_fee")
 
-    # Seleciona e casteia as colunas obrigatórias com os tipos corretos
     df = df.select(
-        f.col("VendorID").cast("long"),
-        f.col("passenger_count").cast("integer"),
-        f.col("total_amount").cast("double"),
-        f.col("tpep_pickup_datetime").cast("timestamp"),
-        f.col("tpep_dropoff_datetime").cast("timestamp"),
+        f.col("VendorID").cast(t.LongType()),
+        f.col("passenger_count").cast(t.IntegerType()),
+        f.col("total_amount").cast(t.DoubleType()),
+        f.col("tpep_pickup_datetime").cast(t.TimestampType()),
+        f.col("tpep_dropoff_datetime").cast(t.TimestampType()),
     )
     dfs.append(df)
 
-# Une todos os meses em um único DataFrame
 df_final = reduce(DataFrame.union, dfs)
 
 print(f"Total de linhas: {df_final.count():,}")
@@ -71,10 +66,7 @@ df_final.printSchema()
 # COMMAND ----------
 
 # Salva os arquivos como Delta Table no catálogo
-df_final.write \
-    .format("delta") \
-    .mode("overwrite") \
-    .saveAsTable("workspace.nyc_taxi.yellow_trips")
+df_final.write.format("delta").mode("overwrite").saveAsTable("workspace.nyc_taxi.yellow_trips")
 
 # COMMAND ----------
 
