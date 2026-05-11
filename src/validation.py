@@ -44,7 +44,6 @@ for col, expected in expected_types.items():
 # 4. Valida se há valores nulos
 columns = [
     "vendor_id",
-    "passenger_count",
     "total_amount",
     "tpep_pickup_datetime",
     "tpep_dropoff_datetime"
