@@ -94,7 +94,7 @@ SELECT * FROM workspace.nyc_taxi.yellow_trips;
 **Obs.:** Considerando que os registros com as condições abaixo possam ser erros de preenchimento ou corridas canceladas, essas observações foram desconsiderados nestas análise, pois podem distorcer o resultado.
 - `passenger_count` nulo ou igual a zero;
 - `total_amount` menor ou igual a zero;
-- `tpep_pickup_datetime` < `tpep_dropoff_datetime`;
+- `tpep_pickup_datetime` > `tpep_dropoff_datetime`;
 - corridas com duração maior que 3 horas.
 
 ### Pergunta 1: Média de valor total por mês
